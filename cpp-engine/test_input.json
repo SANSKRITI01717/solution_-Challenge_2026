@@ -1,0 +1,104 @@
+{
+  "zones": [
+    {
+      "id": "z1",
+      "name": "Flood Zone A - Riverside",
+      "lat": 22.7196,
+      "lng": 75.8577,
+      "severity": 9,
+      "peopleAffected": 5000,
+      "requiredSkill": "rescue",
+      "needsHelp": true
+    },
+    {
+      "id": "z2",
+      "name": "Earthquake Site - Old City",
+      "lat": 22.7250,
+      "lng": 75.8700,
+      "severity": 8,
+      "peopleAffected": 2000,
+      "requiredSkill": "medical",
+      "needsHelp": true
+    },
+    {
+      "id": "z3",
+      "name": "Fire Zone - Industrial Area",
+      "lat": 22.7100,
+      "lng": 75.8400,
+      "severity": 6,
+      "peopleAffected": 800,
+      "requiredSkill": "logistics",
+      "needsHelp": true
+    },
+    {
+      "id": "z4",
+      "name": "Landslide - Hill Station",
+      "lat": 22.7400,
+      "lng": 75.8900,
+      "severity": 7,
+      "peopleAffected": 300,
+      "requiredSkill": "rescue",
+      "needsHelp": true
+    }
+  ],
+  "volunteers": [
+    {
+      "id": "v1",
+      "name": "Arjun Mehta",
+      "lat": 22.7180,
+      "lng": 75.8560,
+      "skill": "rescue",
+      "available": true
+    },
+    {
+      "id": "v2",
+      "name": "Priya Sharma",
+      "lat": 22.7260,
+      "lng": 75.8720,
+      "skill": "medical",
+      "available": true
+    },
+    {
+      "id": "v3",
+      "name": "Ravi Kumar",
+      "lat": 22.7090,
+      "lng": 75.8390,
+      "skill": "logistics",
+      "available": true
+    },
+    {
+      "id": "v4",
+      "name": "Neha Singh",
+      "lat": 22.7380,
+      "lng": 75.8880,
+      "skill": "rescue",
+      "available": true
+    },
+    {
+      "id": "v5",
+      "name": "Amit Patel",
+      "lat": 22.7300,
+      "lng": 75.8600,
+      "skill": "medical",
+      "available": true
+    }
+  ],
+  "resources": [
+    {
+      "id": "r1",
+      "type": "medicine",
+      "quantity": 500,
+      "lat": 22.7200,
+      "lng": 75.8580,
+      "ngoId": "ngo1"
+    },
+    {
+      "id": "r2",
+      "type": "food",
+      "quantity": 1000,
+      "lat": 22.7150,
+      "lng": 75.8500,
+      "ngoId": "ngo2"
+    }
+  ]
+}
