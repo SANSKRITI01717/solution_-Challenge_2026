@@ -26,7 +26,7 @@ export default function SituationReport({ zones, volunteers, assignments, stats 
         zones, volunteers, assignments, stats
       })
       setReport(res.data.report)
-      setGenTime(res.data.generatedAt ? new Date(res.data.generatedAt).toLocaleTimeString() : new Date().toLocaleTimeString())
+      setGenTime(new Date().toLocaleTimeString())
     } catch (err) {
       toast.error('Error: ' + (err.response?.data?.error || err.message))
       setOpen(false)
