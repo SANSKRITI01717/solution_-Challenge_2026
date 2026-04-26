@@ -1,7 +1,8 @@
 const { spawn } = require('child_process');
 const path = require('path');
 
-const ENGINE_PATH = path.join(__dirname, '../../cpp-engine/engine');
+const isWindows  = process.platform === 'win32'
+const ENGINE_PATH = path.join(__dirname, '../../cpp-engine', isWindows ? 'engine.exe' : 'engine')
 /**
  * Run C++ allocation engine.
  * Works in both online mode (called via API) and
