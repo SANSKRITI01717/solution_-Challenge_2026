@@ -18,7 +18,17 @@ const io     = new Server(server, {
 });
 
 // ── Middleware ──
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://disaster-relief-2026.web.app',
+    'https://disaster-relief-2026.firebaseapp.com'
+  ],
+  credentials: true,
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization']
+}));
 app.use(express.json());
 
 // Attach io to every request so routes can emit events

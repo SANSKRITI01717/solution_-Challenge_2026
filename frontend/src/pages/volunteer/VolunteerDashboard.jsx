@@ -11,6 +11,8 @@ import {
 } from 'lucide-react'
 import { getSkillIcon, getSkillColor, getPriorityBg } from '../../utils/priority'
 
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
 export default function VolunteerDashboard() {
   const { volunteer, logout, refreshMe } = useAuth()
   const { socket }                       = useSocket()
@@ -54,7 +56,7 @@ export default function VolunteerDashboard() {
     if (!zone) return
     setLoadingAI(true)
     try {
-      const res = await axios.post('/api/gemini/zone-insight', {
+      const res = await axios.post(`${BASE}/api/gemini/zone-insight`, {
         zone: {
           _id:            zone._id,
           name:           zone.name,
@@ -76,7 +78,7 @@ export default function VolunteerDashboard() {
   async function handleComplete() {
     setCompleting(true)
     try {
-      await axios.patch('/api/auth/complete-task')
+      await axios.patch(`${BASE}/api/auth/complete-task`)
       toast.success('✅ Task marked complete! You are now available.')
       setAiReport(null)
       await refreshMe()

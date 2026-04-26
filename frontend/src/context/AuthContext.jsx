@@ -3,6 +3,8 @@ import axios from 'axios'
 
 const AuthContext = createContext(null)
 
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
 export function AuthProvider({ children }) {
   const [volunteer, setVolunteer] = useState(null)
   const [loading,   setLoading]   = useState(true)
@@ -10,10 +12,17 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem('vol_token')
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-      axios.get('/api/auth/me')
-        .then(res => setVolunteer(res.data))
-        .catch(() => { localStorage.removeItem('vol_token'); delete axios.defaults.headers.common['Authorization'] })
+      axios.get(`${BASE}/api/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(res => {
+          setVolunteer(res.data)
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+        })
+        .catch(() => {
+          localStorage.removeItem('vol_token')
+          delete axios.defaults.headers.common['Authorization']
+        })
         .finally(() => setLoading(false))
     } else {
       setLoading(false)
@@ -21,7 +30,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function login(email, password) {
-    const res = await axios.post('/api/auth/login', { email, password })
+    const res = await axios.post(`${BASE}/api/auth/login`, { email, password })
     localStorage.setItem('vol_token', res.data.token)
     axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`
     setVolunteer(res.data.volunteer)
@@ -29,7 +38,7 @@ export function AuthProvider({ children }) {
   }
 
   async function register(data) {
-    const res = await axios.post('/api/auth/register', data)
+    const res = await axios.post(`${BASE}/api/auth/register`, data)
     localStorage.setItem('vol_token', res.data.token)
     axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`
     setVolunteer(res.data.volunteer)
@@ -37,7 +46,10 @@ export function AuthProvider({ children }) {
   }
 
   async function refreshMe() {
-    const res = await axios.get('/api/auth/me')
+    const token = localStorage.getItem('vol_token')
+    const res = await axios.get(`${BASE}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
     setVolunteer(res.data)
     return res.data
   }
