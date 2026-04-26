@@ -11,7 +11,8 @@ export function SocketProvider({ children }) {
   const [simTick, setSimTick]     = useState(null)
 
   useEffect(() => {
-    const socket = io('http://localhost:5000', { transports: ['websocket'] })
+    const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+    const socket = io(SOCKET_URL, { transports: ['websocket'] })
     socketRef.current = socket
 
     socket.on('connect',    () => { setConnected(true);  toast.success('Live connection established') })
