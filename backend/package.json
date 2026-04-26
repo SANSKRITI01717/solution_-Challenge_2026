@@ -1,12 +1,11 @@
-
 {
   "name": "disaster-relief-backend",
   "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "build": "g++ -std=c++17 -O2 -o ../cpp-engine/engine ../cpp-engine/engine.cpp || echo 'G++ not available'",
-    "postinstall": "g++ -std=c++17 -O2 -o ../cpp-engine/engine ../cpp-engine/engine.cpp || echo 'Skipping C++ compile'"
+    "dev": "nodemon server.js",
+    "postinstall": "g++ -std=c++17 -O2 -o ../cpp-engine/engine ../cpp-engine/engine.cpp && echo 'C++ engine compiled successfully!' || echo 'G++ not available'"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
@@ -17,5 +16,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.0",
     "socket.io": "^4.7.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
   }
 }
