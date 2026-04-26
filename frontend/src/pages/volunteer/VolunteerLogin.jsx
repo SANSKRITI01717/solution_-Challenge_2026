@@ -59,7 +59,7 @@ export default function VolunteerLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+    <div className="flex items-center justify-center p-4 py-10">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
@@ -161,12 +161,7 @@ export default function VolunteerLogin() {
             </button>
           </form>
 
-          {/* Admin link */}
-          <div className="mt-4 pt-4 border-t border-slate-700/50 text-center">
-            <a href="/" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
-              ← Go to Admin Dashboard
-            </a>
-          </div>
+
         </div>
       </div>
     </div>

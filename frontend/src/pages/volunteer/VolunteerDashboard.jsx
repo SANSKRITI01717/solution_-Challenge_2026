@@ -95,7 +95,7 @@ export default function VolunteerDashboard() {
   if (!volunteer) return null
 
   return (
-    <div className="min-h-screen bg-slate-900 p-4 max-w-lg mx-auto">
+    <div className="p-4 max-w-2xl mx-auto">
 
       {/* Header */}
       <div className="flex items-center justify-between mb-5">

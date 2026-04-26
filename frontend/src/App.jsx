@@ -9,49 +9,50 @@ import OfflineMode from './pages/OfflineMode'
 import VolunteerLogin from './pages/volunteer/VolunteerLogin'
 import VolunteerDashboard from './pages/volunteer/VolunteerDashboard'
 
-// Protected route — only logged in volunteers
-function ProtectedVolunteer({ children }) {
-  const { volunteer, loading } = useAuth()
-  if (loading) return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-    </div>
-  )
-  return volunteer ? children : <Navigate to="/volunteer/login" />
-}
-
-// Admin layout with sidebar
-function AdminLayout() {
+// Main layout — sidebar + content (used for ALL pages)
+function MainLayout({ children }) {
   return (
     <div className="flex min-h-screen bg-slate-900">
       <Sidebar />
       <main className="flex-1 overflow-auto">
-        <Routes>
-          <Route path="/"           element={<Dashboard />} />
-          <Route path="/volunteers" element={<Volunteers />} />
-          <Route path="/offline"    element={<OfflineMode />} />
-        </Routes>
+        {children}
       </main>
     </div>
   )
+}
+
+// Volunteer page — shows login OR dashboard depending on auth
+function VolunteerPage() {
+  const { volunteer, loading } = useAuth()
+
+  if (loading) return (
+    <div className="flex items-center justify-center h-full py-20">
+      <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
+
+  // If logged in show dashboard, else show login
+  return volunteer ? <VolunteerDashboard /> : <VolunteerLogin />
 }
 
 export default function App() {
   return (
     <AuthProvider>
       <SocketProvider>
-        <Routes>
-          {/* Volunteer portal routes */}
-          <Route path="/volunteer/login"     element={<VolunteerLogin />} />
-          <Route path="/volunteer/dashboard" element={
-            <ProtectedVolunteer>
-              <VolunteerDashboard />
-            </ProtectedVolunteer>
-          } />
+        <MainLayout>
+          <Routes>
+            {/* Admin routes */}
+            <Route path="/"           element={<Dashboard />} />
+            <Route path="/volunteers" element={<Volunteers />} />
+            <Route path="/offline"    element={<OfflineMode />} />
 
-          {/* Admin dashboard routes */}
-          <Route path="/*" element={<AdminLayout />} />
-        </Routes>
+            {/* Volunteer portal — same sidebar, same layout */}
+            <Route path="/volunteer"  element={<VolunteerPage />} />
+
+            {/* Catch all */}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </MainLayout>
 
         <Toaster
           position="top-right"
