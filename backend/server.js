@@ -30,7 +30,10 @@ app.use(cors({
   allowedHeaders: ['Content-Type','Authorization']
 }));
 app.use(express.json());
-
+app.use((req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+});
 // Attach io to every request so routes can emit events
 app.use((req, _res, next) => { req.io = io; next(); });
 

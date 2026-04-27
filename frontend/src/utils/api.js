@@ -1,14 +1,18 @@
 import axios from 'axios'
 
-const BASE = import.meta.env.VITE_API_URL || "https://disaster-relief-backend-kn9t.onrender.com";
+// const BASE = import.meta.env.VITE_API_URL || "https://disaster-relief-backend-kn9t.onrender.com";
+
+// const api = axios.create({
+//   baseURL: `${BASE}/api`,
+//   headers: {
+//     "Cache-Control": "no-cache"
+//   }
+// });
+const BASE = "http://localhost:5000";
 
 const api = axios.create({
-  baseURL: `${BASE}/api`,
-  headers: {
-    "Cache-Control": "no-cache"
-  }
+  baseURL: `${BASE}/api`
 });
-
 // ── Zones ──
 export const getZones      = ()       => api.get('/zones')
 export const createZone    = (data)   => api.post('/zones', data)
