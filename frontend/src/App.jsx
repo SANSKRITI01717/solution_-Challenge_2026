@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { SocketProvider } from './context/SocketContext'
 import { AuthProvider, useAuth } from './context/AuthContext'
@@ -36,6 +37,16 @@ function VolunteerPage() {
 }
 
 export default function App() {
+  const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+  
+  useEffect(() => {
+    // Keep Render backend awake — pings every 10 minutes
+    const ping = () => fetch(`${BASE}/api/health`).catch(() => {})
+    ping()
+    const timer = setInterval(ping, 10 * 60 * 1000)
+    return () => clearInterval(timer)
+  }, [])
+
   return (
     <AuthProvider>
       <SocketProvider>
