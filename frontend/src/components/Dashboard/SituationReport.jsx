@@ -11,25 +11,35 @@ const STATUS_STYLES = {
   STABLE:   { text: 'text-green-400',  bg: 'bg-green-500/10 border-green-500/30' },
 }
 
-export default function SituationReport({ zones, volunteers, assignments, stats }) {
+export default function SituationReport({ zones = [], volunteers = [], assignments = [], stats }) {
   const [open,    setOpen]    = useState(false)
   const [loading, setLoading] = useState(false)
   const [report,  setReport]  = useState(null)
   const [genTime, setGenTime] = useState(null)
 
+  const API_URL = import.meta.env.VITE_API_URL || ''
+
   async function fetchReport() {
     setOpen(true)
     setLoading(true)
     setReport(null)
+
     try {
-      const res = await axios.post('/api/gemini/situation-report', {
+      const res = await axios.post(`${API_URL}/api/gemini/situation-report`, {
         zones, volunteers, assignments, stats
       })
-      setReport(res.data.report)
-      setGenTime(new Date().toLocaleTimeString())
+
+      // ✅ safe response check
+      if (res.data && res.data.report) {
+        setReport(res.data.report)
+        setGenTime(new Date().toLocaleTimeString())
+      } else {
+        throw new Error('Invalid response')
+      }
+
     } catch (err) {
       toast.error('Error: ' + (err.response?.data?.error || err.message))
-      setOpen(false)
+      // ❌ removed setOpen(false) so modal doesn't disappear
     } finally {
       setLoading(false)
     }
@@ -64,7 +74,9 @@ export default function SituationReport({ zones, volunteers, assignments, stats 
             </div>
             <div>
               <div style={{ fontSize:14, fontWeight:700, color:'white' }}>AI Situation Report</div>
-              <div style={{ fontSize:12, color:'#64748b' }}>{genTime ? `Generated at ${genTime}` : 'Gemini AI Command Briefing'}</div>
+              <div style={{ fontSize:12, color:'#64748b' }}>
+                {genTime ? `Generated at ${genTime}` : 'Gemini AI Command Briefing'}
+              </div>
             </div>
           </div>
           <button onClick={() => setOpen(false)} style={{ color:'#64748b', background:'none', border:'none', cursor:'pointer' }}>
@@ -78,7 +90,9 @@ export default function SituationReport({ zones, volunteers, assignments, stats 
             <div style={{ width:40, height:40, border:'2px solid #7c3aed', borderTopColor:'transparent', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} />
             <div style={{ textAlign:'center' }}>
               <div style={{ color:'#e2e8f0', fontSize:14 }}>Gemini is analyzing all zones...</div>
-              <div style={{ color:'#64748b', fontSize:12, marginTop:4 }}>Processing {zones.length} zones and {volunteers.length} volunteers</div>
+              <div style={{ color:'#64748b', fontSize:12, marginTop:4 }}>
+                Processing {zones?.length || 0} zones and {volunteers?.length || 0} volunteers
+              </div>
             </div>
           </div>
         )}
@@ -88,97 +102,60 @@ export default function SituationReport({ zones, volunteers, assignments, stats 
           <div style={{ padding:'1.25rem', display:'flex', flexDirection:'column', gap:'1rem' }}>
 
             {/* Overall status */}
-            <div style={{ background: report.overallStatus === 'CRITICAL' ? 'rgba(239,68,68,0.1)' : 'rgba(249,115,22,0.1)', border: `1px solid ${report.overallStatus === 'CRITICAL' ? 'rgba(239,68,68,0.3)' : 'rgba(249,115,22,0.3)'}`, borderRadius:12, padding:'1rem' }}>
+            <div style={{
+              background: report.overallStatus === 'CRITICAL' ? 'rgba(239,68,68,0.1)' : 'rgba(249,115,22,0.1)',
+              border: `1px solid ${report.overallStatus === 'CRITICAL' ? 'rgba(239,68,68,0.3)' : 'rgba(249,115,22,0.3)'}`,
+              borderRadius:12, padding:'1rem'
+            }}>
               <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
                 <Radio size={16} color={report.overallStatus === 'CRITICAL' ? '#f87171' : '#fb923c'} />
                 <span style={{ fontSize:13, fontWeight:700, color: report.overallStatus === 'CRITICAL' ? '#f87171' : '#fb923c', textTransform:'uppercase', letterSpacing:'0.05em' }}>
                   Overall Status: {report.overallStatus}
                 </span>
               </div>
-              <p style={{ fontSize:13, color:'#cbd5e1', lineHeight:1.6 }}>{report.executiveSummary}</p>
+              <p style={{ fontSize:13, color:'#cbd5e1', lineHeight:1.6 }}>
+                {report.executiveSummary}
+              </p>
             </div>
 
             {/* Top priority */}
             <div style={{ background:'rgba(15,23,42,0.8)', border:'1px solid rgba(239,68,68,0.2)', borderRadius:12, padding:'1rem' }}>
               <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
                 <Target size={14} color="#f87171" />
-                <span style={{ fontSize:11, fontWeight:600, color:'#f87171', textTransform:'uppercase', letterSpacing:'0.05em' }}>Top Priority Right Now</span>
+                <span style={{ fontSize:11, fontWeight:600, color:'#f87171', textTransform:'uppercase', letterSpacing:'0.05em' }}>
+                  Top Priority Right Now
+                </span>
               </div>
               <p style={{ fontSize:13, color:'#cbd5e1' }}>{report.topPriority}</p>
             </div>
 
-            {/* Two columns */}
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0.75rem' }}>
-              {/* Resource gaps */}
-              <div style={{ background:'rgba(15,23,42,0.8)', border:'1px solid #1e293b', borderRadius:12, padding:'0.875rem' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:10 }}>
-                  <AlertTriangle size={13} color="#fbbf24" />
-                  <span style={{ fontSize:11, fontWeight:600, color:'#cbd5e1', textTransform:'uppercase', letterSpacing:'0.05em' }}>Resource Gaps</span>
-                </div>
-                <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                  {report.resourceGaps?.map((gap, i) => (
-                    <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:6, fontSize:12, color:'#fcd34d' }}>
-                      <span style={{ color:'#f59e0b', flexShrink:0 }}>⚠</span>
-                      <span>{gap}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Recommendations */}
-              <div style={{ background:'rgba(15,23,42,0.8)', border:'1px solid #1e293b', borderRadius:12, padding:'0.875rem' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:10 }}>
-                  <CheckCircle size={13} color="#34d399" />
-                  <span style={{ fontSize:11, fontWeight:600, color:'#cbd5e1', textTransform:'uppercase', letterSpacing:'0.05em' }}>Recommendations</span>
-                </div>
-                <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                  {report.immediateRecommendations?.map((rec, i) => (
-                    <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:6, fontSize:12, color:'#6ee7b7' }}>
-                      <span style={{ color:'#10b981', flexShrink:0 }}>→</span>
-                      <span>{rec}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Coordination */}
-            <div style={{ background:'rgba(59,130,246,0.05)', border:'1px solid rgba(59,130,246,0.2)', borderRadius:12, padding:'0.875rem' }}>
-              <div style={{ fontSize:11, fontWeight:600, color:'#60a5fa', textTransform:'uppercase', letterSpacing:'0.05em', marginBottom:6 }}>Coordination Notes</div>
-              <p style={{ fontSize:13, color:'#cbd5e1' }}>{report.coordinationNotes}</p>
-            </div>
-
-            {/* Next 6 hours */}
-            <div style={{ background:'rgba(15,23,42,0.8)', border:'1px solid #1e293b', borderRadius:12, padding:'0.875rem' }}>
-              <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:6 }}>
-                <TrendingUp size={13} color="#c084fc" />
-                <span style={{ fontSize:11, fontWeight:600, color:'#cbd5e1', textTransform:'uppercase', letterSpacing:'0.05em' }}>Next 6 Hours Forecast</span>
-              </div>
-              <p style={{ fontSize:13, color:'#cbd5e1' }}>{report.nextSixHours}</p>
-            </div>
-
-            {/* Success metrics */}
+            {/* Resource gaps */}
             <div>
-              <div style={{ fontSize:11, fontWeight:600, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.05em', marginBottom:8 }}>Success Metrics</div>
-              <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
-                {report.successMetrics?.map((m, i) => (
-                  <span key={i} style={{ fontSize:12, background:'#1e293b', color:'#cbd5e1', border:'1px solid #334155', borderRadius:8, padding:'6px 12px' }}>
-                    {m}
-                  </span>
-                ))}
-              </div>
+              <div style={{ fontSize:11, fontWeight:600, color:'#cbd5e1' }}>Resource Gaps</div>
+              {report.resourceGaps?.map((gap, i) => (
+                <div key={i} style={{ fontSize:12, color:'#fcd34d' }}>⚠ {gap}</div>
+              ))}
+            </div>
+
+            {/* Recommendations */}
+            <div>
+              <div style={{ fontSize:11, fontWeight:600, color:'#cbd5e1' }}>Recommendations</div>
+              {report.immediateRecommendations?.map((rec, i) => (
+                <div key={i} style={{ fontSize:12, color:'#6ee7b7' }}>→ {rec}</div>
+              ))}
             </div>
 
             {/* Footer */}
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', paddingTop:8, borderTop:'1px solid #1e293b' }}>
-              <span style={{ fontSize:11, color:'#475569' }}>Powered by Google Gemini AI</span>
-              <button onClick={fetchReport} style={{ fontSize:12, color:'#c084fc', background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:4 }}>
+            <div style={{ display:'flex', justifyContent:'space-between', paddingTop:8, borderTop:'1px solid #1e293b' }}>
+              <span style={{ fontSize:11, color:'#475569' }}>Powered by Gemini</span>
+              <button onClick={fetchReport} style={{ fontSize:12, color:'#c084fc', background:'none', border:'none', cursor:'pointer' }}>
                 <Brain size={11} /> Regenerate
               </button>
             </div>
           </div>
         )}
       </div>
+
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )
@@ -193,7 +170,6 @@ export default function SituationReport({ zones, volunteers, assignments, stats 
         AI Situation Report
       </button>
 
-      {/* Portal renders modal at document.body level — above Leaflet map */}
       {createPortal(modal, document.body)}
     </>
   )
