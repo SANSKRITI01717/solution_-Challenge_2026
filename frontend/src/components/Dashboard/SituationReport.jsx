@@ -25,9 +25,11 @@ export default function SituationReport({ zones = [], volunteers = [], assignmen
     setReport(null)
 
     try {
-      const res = await axios.post(`${API_URL}/api/gemini/situation-report`, {
+      const res = await axios.post('https://solution-challenge-2026.onrender.com/api/gemini/situation-report', {
         zones, volunteers, assignments, stats
       })
+
+
 
       // ✅ safe response check
       if (res.data && res.data.report) {
