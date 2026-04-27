@@ -7,8 +7,9 @@ import axios from 'axios'
 //   headers: {
 //     "Cache-Control": "no-cache"
 //   }
-// });
-const BASE =  import.meta.env.VITE_API_URL || "https://disaster-relief-backend-kn9t.onrender.com";
+// // });
+// const BASE =  import.meta.env.VITE_API_URL || "https://disaster-relief-backend-kn9t.onrender.com";
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 const api = axios.create({
   baseURL: `${BASE}/api`

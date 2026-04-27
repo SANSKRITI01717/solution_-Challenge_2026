@@ -50,7 +50,8 @@ export default function VolunteerLogin() {
         })
         toast.success('Registered successfully!')
       }
-      navigate('/volunteer/dashboard')
+      // navigate('/volunteer/dashboard')
+      navigate('/volunteer')
     } catch (err) {
       toast.error(err.response?.data?.error || 'Something went wrong')
     } finally {
